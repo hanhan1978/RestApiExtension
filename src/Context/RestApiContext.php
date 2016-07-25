@@ -165,7 +165,7 @@ class RestApiContext implements Context, SnippetAcceptingContext
     {
         $response = json_decode($this->_responseBody, true);
         $structure = $this->findStructureWithKey($response, $arg2);
-        $structure = $structure[0] ?? $structure;
+        $structure = isset($structure[0]) ? $structure[0] : $structure;
         if(!$structure || !isset($structure[$arg1])){
             throw new \Exception("key => {$arg1} not found in response");
         }
