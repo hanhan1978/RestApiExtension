@@ -148,6 +148,37 @@ class RestApiContext implements Context, SnippetAcceptingContext
         $this->_responseBody = $response;
         $this->_ch = $ch;
     }
+    /**
+     * @Then the response content contains key :arg1
+     */
+    public function theResponseContentContainsKey($arg1)
+    {
+        $response = json_decode($this->_responseBody, true);
+        if(!isset($response[$arg1])){
+            throw new \Exception("key => {$arg1} not found in response");
+        }
+    }
+    /**
+     * @Then the response content contains key :arg1 in :arg2
+     */
+    public function theResponseContentContainsKeyIn($arg1, $arg2)
+    {
+        $response = json_decode($this->_responseBody, true);
+        $structure = $this->findStructureWithKey($response, $arg2);
+        $structure = $structure[0] ?? $structure;
+        if(!$structure || !isset($structure[$arg1])){
+            throw new \Exception("key => {$arg1} not found in response");
+        }
+    }
+    private function findStructureWithKey($response, $key){
+        if(isset($response[$key])) return $response[$key];
+        foreach($response as $r){
+            if(is_array($r)){
+                return $this->findStructureWithKey($r, $key);
+            }
+        }
+        return false;
+    }
 //
 // Place your definition and hook methods here:
 //
